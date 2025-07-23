@@ -1,1 +1,66 @@
 project_id = "hqjaleafubxcxtscppvc"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54320
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_anonymous_users = false
+disable_signup = false
+enable_email_confirmations = false
+enable_email_autoconfirm = false
+smtp_admin_email = "admin@example.com"
+smtp_host = "smtp.example.com"
+smtp_port = 587
+smtp_user = "admin@example.com"
+smtp_pass = "password"
+smtp_sender_name = "Admin"
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+template = "Your code is {{ .Code }}"
+
+[realtime]
+enabled = true
+port = 54323
+ip_version = "ipv4"
+
+[storage]
+enabled = true
+port = 54324
+file_size_limit = "50MiB"
+buckets = []
+
+[functions.webhook-handler]
+verify_jwt = false
+
+[inbucket]
+enabled = true
+port = 54325
+smtp_port = 54326
+pop3_port = 54327
+
+[db]
+port = 54322
+
+[edge_runtime]
+enabled = true
+port = 54326
+ip_version = "ipv4"
+
+[analytics]
+enabled = false

@@ -195,11 +195,13 @@ const BaseDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Database className="h-8 w-8 text-primary" />
-            <Link to="/" className="text-2xl font-bold hover:text-primary transition-colors">
+      <header className="border-b border-border/50 gradient-card">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="gradient-primary p-2 rounded-lg">
+              <Database className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <Link to="/" className="text-xl font-bold hover:text-primary transition-colors">
               AI Vector Base
             </Link>
             <span className="text-muted-foreground">/</span>
@@ -209,71 +211,89 @@ const BaseDetail = () => {
             <span className="text-muted-foreground">/</span>
             <span className="font-semibold">{vectorBase.name}</span>
           </div>
-          <Button onClick={() => setShowChat(!showChat)} variant="outline">
+          <Button onClick={() => setShowChat(!showChat)} className="gradient-accent">
             <MessageSquare className="h-4 w-4 mr-2" />
             {showChat ? 'Hide Chat' : 'Open Chat'}
           </Button>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-8">
         {/* Base Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{vectorBase.name}</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-8 gradient-card rounded-2xl p-8 border border-border/50">
+          <h1 className="text-4xl font-bold mb-3 gradient-primary bg-clip-text text-transparent">
+            {vectorBase.name}
+          </h1>
+          <p className="text-muted-foreground text-lg">
             Created {new Date(vectorBase.created_at).toLocaleDateString()} • {documents.length} documents
           </p>
         </div>
 
-        <Tabs defaultValue="documents" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="documents" className="flex items-center space-x-2">
+        <Tabs defaultValue="documents" className="space-y-8">
+          <TabsList className="gradient-card border-border/50 p-1">
+            <TabsTrigger value="documents" className="flex items-center space-x-2 data-[state=active]:gradient-primary">
               <FileText className="h-4 w-4" />
               <span>Documents</span>
             </TabsTrigger>
-            <TabsTrigger value="search" className="flex items-center space-x-2">
+            <TabsTrigger value="search" className="flex items-center space-x-2 data-[state=active]:gradient-primary">
               <Search className="h-4 w-4" />
               <span>Search</span>
             </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center space-x-2">
+            <TabsTrigger value="upload" className="flex items-center space-x-2 data-[state=active]:gradient-primary">
               <Upload className="h-4 w-4" />
               <span>Upload</span>
+            </TabsTrigger>
+            <TabsTrigger value="webhooks" className="flex items-center space-x-2 data-[state=active]:gradient-primary">
+              <Database className="h-4 w-4" />
+              <span>Webhooks</span>
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="documents">
-            <Card>
-              <CardHeader>
-                <CardTitle>Documents</CardTitle>
-                <CardDescription>
-                  Manage your uploaded documents and their processing status
-                </CardDescription>
+            <Card className="gradient-card border-border/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Documents</CardTitle>
+                    <CardDescription className="text-lg">
+                      Manage your uploaded documents and their processing status
+                    </CardDescription>
+                  </div>
+                  <div className="gradient-primary px-4 py-2 rounded-lg">
+                    <FileText className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {documents.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Documents Yet</h3>
-                    <p className="text-muted-foreground">Upload your first document to get started.</p>
+                  <div className="text-center py-16">
+                    <div className="p-6 rounded-full bg-muted w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                      <FileText className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">No Documents Yet</h3>
+                    <p className="text-muted-foreground text-lg">Upload your first document to get started.</p>
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>File Name</TableHead>
-                        <TableHead>Size</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Chunks</TableHead>
-                        <TableHead>Uploaded</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {documents.map((doc) => (
-                        <TableRow key={doc.id}>
-                          <TableCell className="font-medium">{doc.file_name}</TableCell>
-                          <TableCell>{formatFileSize(doc.file_size || 0)}</TableCell>
-                          <TableCell>
+                  <div className="space-y-4">
+                    {documents.map((doc) => (
+                      <div key={doc.id} className="gradient-card border border-border/50 rounded-xl p-6 transition-all hover:glow-primary">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="p-3 rounded-lg bg-muted">
+                              <FileText className="h-6 w-6 text-foreground" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-lg">{doc.file_name}</p>
+                              <div className="flex items-center space-x-4 text-muted-foreground">
+                                <span>{formatFileSize(doc.file_size || 0)}</span>
+                                <span>•</span>
+                                <span>{doc.chunk_count || 0} chunks</span>
+                                <span>•</span>
+                                <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
                               {getStatusIcon(doc.status)}
                               <Badge variant={
@@ -284,67 +304,74 @@ const BaseDetail = () => {
                                 {doc.status}
                               </Badge>
                             </div>
-                          </TableCell>
-                          <TableCell>{doc.chunk_count || 0}</TableCell>
-                          <TableCell>{new Date(doc.uploaded_at).toLocaleDateString()}</TableCell>
-                          <TableCell>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => deleteDocument(doc.id)}
-                              className="text-red-600 hover:text-red-700"
+                              className="hover:bg-destructive/20 hover:text-destructive"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-5 w-5" />
                             </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="search">
-            <Card>
-              <CardHeader>
-                <CardTitle>Semantic Search</CardTitle>
-                <CardDescription>
-                  Search through your documents using natural language queries
-                </CardDescription>
+            <Card className="gradient-card border-border/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Semantic Search</CardTitle>
+                    <CardDescription className="text-lg">
+                      Search through your documents using natural language queries
+                    </CardDescription>
+                  </div>
+                  <div className="gradient-primary px-4 py-2 rounded-lg">
+                    <Search className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex space-x-2">
+              <CardContent className="space-y-6">
+                <div className="flex space-x-3">
                   <Textarea
                     placeholder="Enter your search query..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="min-h-[80px]"
+                    className="min-h-[120px] bg-muted border-border/50"
                   />
-                  <Button onClick={handleSearch} disabled={searching || !searchQuery.trim()}>
+                  <Button onClick={handleSearch} disabled={searching || !searchQuery.trim()} className="gradient-primary px-8">
                     {searching ? (
-                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Search className="h-4 w-4" />
+                      <Search className="h-5 w-5" />
                     )}
                   </Button>
                 </div>
 
                 {searchResults.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="font-semibold">Search Results</h3>
+                    <h3 className="text-xl font-semibold">Search Results</h3>
                     {searchResults.map((result, index) => (
-                      <Card key={result.id} className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline">Score: {result.score?.toFixed(3)}</Badge>
-                        </div>
-                        <p className="text-sm">{result.content}</p>
-                        {result.metadata && (
-                          <div className="mt-2 text-xs text-muted-foreground">
-                            {JSON.stringify(result.metadata)}
+                      <Card key={result.id} className="gradient-card border-border/50">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <Badge variant="outline" className="gradient-accent">
+                              Score: {result.score?.toFixed(3)}
+                            </Badge>
                           </div>
-                        )}
+                          <p className="text-base leading-relaxed">{result.content}</p>
+                          {result.metadata && (
+                            <div className="mt-4 p-3 bg-muted rounded-lg text-sm text-muted-foreground">
+                              {JSON.stringify(result.metadata)}
+                            </div>
+                          )}
+                        </CardContent>
                       </Card>
                     ))}
                   </div>
@@ -354,15 +381,102 @@ const BaseDetail = () => {
           </TabsContent>
 
           <TabsContent value="upload">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Documents</CardTitle>
-                <CardDescription>
-                  Upload documents to add them to your vector base
-                </CardDescription>
+            <Card className="gradient-card border-border/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Upload Documents</CardTitle>
+                    <CardDescription className="text-lg">
+                      Upload documents to add them to your vector base
+                    </CardDescription>
+                  </div>
+                  <div className="gradient-primary px-4 py-2 rounded-lg">
+                    <Upload className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <FileUpload baseId={id!} onUploadComplete={loadDocuments} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="webhooks">
+            <Card className="gradient-card border-border/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl">Webhook Integration</CardTitle>
+                    <CardDescription className="text-lg">
+                      Connect external services and API endpoints to your vector base
+                    </CardDescription>
+                  </div>
+                  <div className="gradient-accent px-4 py-2 rounded-lg">
+                    <Database className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-lg font-semibold mb-3 block">Webhook Configuration</label>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Webhook URL</label>
+                          <Input 
+                            placeholder="https://your-webhook-url.com/endpoint" 
+                            className="mt-2 bg-muted border-border/50"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Secret Key</label>
+                          <Input 
+                            type="password"
+                            placeholder="Optional webhook secret"
+                            className="mt-2 bg-muted border-border/50"
+                          />
+                        </div>
+                        <Button className="w-full gradient-accent">
+                          Configure Webhook
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-lg font-semibold mb-3 block">API Endpoints</label>
+                      <div className="space-y-4">
+                        <div className="gradient-card p-4 rounded-lg border border-border/50">
+                          <label className="text-sm font-medium text-muted-foreground">GET Documents</label>
+                          <code className="block mt-2 text-sm text-foreground break-all">
+                            GET /api/vectors/{id}/webhook
+                          </code>
+                        </div>
+                        <div className="gradient-card p-4 rounded-lg border border-border/50">
+                          <label className="text-sm font-medium text-muted-foreground">POST Data</label>
+                          <code className="block mt-2 text-sm text-foreground break-all">
+                            POST /api/vectors/{id}/webhook
+                          </code>
+                        </div>
+                        <Button variant="outline" className="w-full">
+                          Test Connection
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="border-t border-border/50 pt-8">
+                  <h3 className="text-lg font-semibold mb-4">Recent Webhook Activity</h3>
+                  <div className="text-center py-8">
+                    <div className="p-4 rounded-full bg-muted w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <Database className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">No webhook activity yet</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
