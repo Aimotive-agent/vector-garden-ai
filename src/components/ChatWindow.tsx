@@ -110,7 +110,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end p-4 pointer-events-none">
       <Card className="w-96 h-[600px] shadow-xl flex flex-col gradient-card border-border/50 glow-primary pointer-events-auto">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg flex items-center space-x-2">
           <MessageSquare className="h-5 w-5" />
           <span>AI Chat</span>
@@ -118,9 +118,9 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
         <Button variant="ghost" size="sm" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
-      </CardHeader>
+        </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col p-0">
+        <CardContent className="flex-1 flex flex-col p-0">
         <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
           <div className="space-y-4">
             {messages.map((message) => (
@@ -192,8 +192,8 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
     </div>
   );
 };
