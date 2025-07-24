@@ -39,8 +39,8 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
         const { data: document, error: docError } = await supabase
           .from('documents')
           .insert({
-            case_id: baseId, // Using baseId for case_id to satisfy foreign key
-            base_id: baseId, // Also setting base_id for consistency
+            case_id: null, // Not using cases, only vector bases
+            base_id: baseId, // Use base_id to reference vector_bases
             file_name: upload.file.name,
             file_size: upload.file.size,
             mime_type: upload.file.type,

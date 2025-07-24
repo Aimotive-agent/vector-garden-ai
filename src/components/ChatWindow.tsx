@@ -108,7 +108,8 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
   };
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[600px] shadow-xl z-50 flex flex-col gradient-card border-border/50 glow-primary">
+    <div className="fixed inset-0 z-50 flex items-end justify-end p-4 pointer-events-none">
+      <Card className="w-96 h-[600px] shadow-xl flex flex-col gradient-card border-border/50 glow-primary pointer-events-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg flex items-center space-x-2">
           <MessageSquare className="h-5 w-5" />
@@ -193,5 +194,6 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 };
