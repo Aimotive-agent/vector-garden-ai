@@ -108,7 +108,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
   };
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[600px] shadow-lg z-50 flex flex-col">
+    <Card className="fixed bottom-4 right-4 w-96 h-[600px] shadow-xl z-50 flex flex-col gradient-card border-border/50 glow-primary">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg flex items-center space-x-2">
           <MessageSquare className="h-5 w-5" />

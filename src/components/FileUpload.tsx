@@ -39,7 +39,7 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
         const { data: document, error: docError } = await supabase
           .from('documents')
           .insert({
-            case_id: baseId,
+            base_id: baseId,
             file_name: upload.file.name,
             file_size: upload.file.size,
             mime_type: upload.file.type,
