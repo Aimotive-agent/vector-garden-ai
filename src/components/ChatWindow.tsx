@@ -3,14 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Send, X, MessageSquare, Bot, User } from "lucide-react";
+import { Send, X, MessageSquare, Bot, User, Database } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface ChatWindowProps {
   baseId: string;
   onClose: () => void;
+}
+
+interface VectorBase {
+  id: string;
+  name: string;
 }
 
 interface Message {
@@ -31,6 +37,8 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [vectorBases, setVectorBases] = useState<VectorBase[]>([]);
+  const [selectedBaseId, setSelectedBaseId] = useState(baseId);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -40,6 +48,31 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    const loadVectorBases = async () => {
+      const { data, error } = await supabase
+        .from('vector_bases')
+        .select('id, name')
+        .order('name');
+      
+      if (data && !error) {
+        setVectorBases(data);
+      }
+    };
+
+    loadVectorBases();
+  }, []);
+
+  const handleBaseChange = (newBaseId: string) => {
+    setSelectedBaseId(newBaseId);
+    setMessages([{
+      id: '1',
+      role: 'assistant',
+      content: 'Hello! I can help you search and answer questions about your documents. What would you like to know?',
+      timestamp: new Date()
+    }]); // Reset chat when switching bases
+  };
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -59,7 +92,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
       // Call chat edge function
       const { data, error } = await supabase.functions.invoke('chat', {
         body: {
-          base_id: baseId,
+          base_id: selectedBaseId,
           messages: [
             ...messages.filter(m => m.role !== 'assistant' || m.id === '1'), // Keep system message
             userMessage
@@ -110,14 +143,35 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end p-4 pointer-events-none">
       <Card className="w-96 h-[600px] shadow-xl flex flex-col gradient-card border-border/50 glow-primary pointer-events-auto">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg flex items-center space-x-2">
-          <MessageSquare className="h-5 w-5" />
-          <span>AI Chat</span>
-        </CardTitle>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
+        <CardHeader className="flex flex-col space-y-3 pb-3">
+          <div className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-lg flex items-center space-x-2">
+              <MessageSquare className="h-5 w-5" />
+              <span>AI Chat</span>
+            </CardTitle>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Database className="h-4 w-4" />
+              <span>Vector Base:</span>
+            </div>
+            <Select value={selectedBaseId} onValueChange={handleBaseChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a vector base" />
+              </SelectTrigger>
+              <SelectContent>
+                {vectorBases.map((base) => (
+                  <SelectItem key={base.id} value={base.id}>
+                    {base.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
       
         <CardContent className="flex-1 flex flex-col p-0">

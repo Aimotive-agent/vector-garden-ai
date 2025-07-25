@@ -112,7 +112,7 @@ export type Database = {
       documents: {
         Row: {
           base_id: string | null
-          case_id: string
+          case_id: string | null
           chunk_count: number | null
           file_name: string
           file_path: string
@@ -125,7 +125,7 @@ export type Database = {
         }
         Insert: {
           base_id?: string | null
-          case_id: string
+          case_id?: string | null
           chunk_count?: number | null
           file_name: string
           file_path: string
@@ -138,7 +138,7 @@ export type Database = {
         }
         Update: {
           base_id?: string | null
-          case_id?: string
+          case_id?: string | null
           chunk_count?: number | null
           file_name?: string
           file_path?: string
