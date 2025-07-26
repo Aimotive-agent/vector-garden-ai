@@ -14,11 +14,20 @@ serve(async (req) => {
   }
 
   try {
-    const { message, baseId } = await req.json();
+    const { messages, base_id } = await req.json();
 
-    if (!message || !baseId) {
+    if (!messages || !base_id || !Array.isArray(messages) || messages.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Message and baseId are required' }),
+        JSON.stringify({ error: 'Messages array and base_id are required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get the last user message
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop();
+    if (!lastUserMessage) {
+      return new Response(
+        JSON.stringify({ error: 'No user message found' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -37,7 +46,7 @@ serve(async (req) => {
         metadata,
         documents!inner(base_id)
       `)
-      .eq('documents.base_id', baseId)
+      .eq('documents.base_id', base_id)
       .limit(5);
 
     if (chunksError) {
@@ -52,7 +61,7 @@ serve(async (req) => {
     const context = chunks?.map(chunk => chunk.content).join('\n\n') || '';
 
     // Simple response based on context (you can enhance this with OpenAI later)
-    const response = `Based on the documents in this knowledge base, I can help answer your question: "${message}"\n\nContext found: ${context.length > 0 ? 'Yes, relevant information found.' : 'No specific context found for this query.'}`;
+    const response = `Based on the documents in this knowledge base, I can help answer your question: "${lastUserMessage.content}"\n\nContext found: ${context.length > 0 ? 'Yes, relevant information found.' : 'No specific context found for this query.'}`;
 
     return new Response(
       JSON.stringify({ response }),

@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Send, X, MessageSquare, Bot, User, Database } from "lucide-react";
+import { Send, X, MessageSquare, Bot, User, Database, Save } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface ChatWindowProps {
@@ -133,6 +133,31 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
     }
   };
 
+  const saveToVault = async (content: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('save-to-vault', {
+        body: {
+          content,
+          base_id: selectedBaseId
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "AI response saved to vault successfully!",
+      });
+    } catch (error) {
+      console.error('Save to vault error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save to vault. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -198,8 +223,23 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
                   }`}
                 >
                   {message.role === 'assistant' ? (
-                    <div className="prose prose-sm max-w-none">
-                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    <div className="space-y-2">
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      </div>
+                      {message.id !== '1' && (
+                        <div className="flex justify-end pt-2 border-t border-border/20">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => saveToVault(message.content)}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <Save className="h-3 w-3 mr-1" />
+                            Save to Vault
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <p className="text-sm">{message.content}</p>
