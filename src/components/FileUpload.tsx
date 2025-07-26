@@ -63,6 +63,27 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
 
         if (uploadError) throw uploadError;
 
+        // Update upload status to processing
+        setUploads(prev => prev.map(u => 
+          u.id === upload.id 
+            ? { ...u, progress: 50, status: 'uploading' }
+            : u
+        ));
+
+        // Trigger document processing
+        const { error: processError } = await supabase.functions.invoke('process-document', {
+          body: { documentId: document.id }
+        });
+
+        if (processError) {
+          console.error('Processing error:', processError);
+          toast({
+            title: "Processing Warning",
+            description: `${upload.file.name} uploaded but processing failed. You can retry processing later.`,
+            variant: "destructive",
+          });
+        }
+
         // Update upload status
         setUploads(prev => prev.map(u => 
           u.id === upload.id 
@@ -72,7 +93,7 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
 
         toast({
           title: "Success",
-          description: `${upload.file.name} uploaded successfully`,
+          description: `${upload.file.name} uploaded and processed successfully`,
         });
 
       } catch (error) {
