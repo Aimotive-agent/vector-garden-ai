@@ -177,7 +177,7 @@ serve(async (req) => {
             .insert({
               document_id: documentId,
               content: chunk,
-              embedding: `[${embedding.join(',')}]`, // Store as vector
+              embedding: embedding, // Store as array directly
               metadata: {
                 chunk_index: chunkIndex,
                 file_name: document.file_name,

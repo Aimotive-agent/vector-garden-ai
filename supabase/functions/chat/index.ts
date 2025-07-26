@@ -7,6 +7,73 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Generate embedding for query
+async function generateQueryEmbedding(text: string): Promise<number[]> {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  const response = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'text-embedding-3-small',
+      input: text,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.data[0].embedding;
+}
+
+// Generate AI response using OpenAI
+async function generateResponse(query: string, context: string): Promise<string> {
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openAIApiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${openAIApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful AI assistant that answers questions based on the provided document context. Use the context to provide accurate and relevant answers. If the context doesn\'t contain enough information to answer the question, say so clearly.'
+        },
+        {
+          role: 'user',
+          content: `Context from documents:\n${context}\n\nQuestion: ${query}`
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 1000,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -38,30 +105,64 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get relevant chunks from the vector base
-    const { data: chunks, error: chunksError } = await supabase
-      .from('chunks')
-      .select(`
-        content,
-        metadata,
-        documents!inner(base_id)
-      `)
-      .eq('documents.base_id', base_id)
-      .limit(5);
+    // Generate embedding for the user's query
+    const queryEmbedding = await generateQueryEmbedding(lastUserMessage.content);
+
+    // Find relevant chunks using vector similarity search
+    const { data: chunks, error: chunksError } = await supabase.rpc('match_chunks', {
+      query_embedding: queryEmbedding,
+      match_threshold: 0.7,
+      match_count: 5,
+      base_id_filter: base_id
+    });
 
     if (chunksError) {
-      console.error('Error fetching chunks:', chunksError);
+      console.error('Error finding relevant chunks:', chunksError);
+      // Fallback to simple text search if vector search fails
+      const { data: fallbackChunks, error: fallbackError } = await supabase
+        .from('chunks')
+        .select(`
+          content,
+          metadata,
+          documents!inner(base_id)
+        `)
+        .eq('documents.base_id', base_id)
+        .textSearch('content', lastUserMessage.content.split(' ').join(' & '))
+        .limit(3);
+
+      if (fallbackError || !fallbackChunks || fallbackChunks.length === 0) {
+        return new Response(
+          JSON.stringify({ 
+            response: `I couldn't find any relevant information in the knowledge base to answer: "${lastUserMessage.content}". Please make sure documents have been uploaded and processed successfully.`
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const context = fallbackChunks.map(chunk => chunk.content).join('\n\n');
+      const response = await generateResponse(lastUserMessage.content, context);
+
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch relevant documents' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ response }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Build context from chunks
-    const context = chunks?.map(chunk => chunk.content).join('\n\n') || '';
+    if (!chunks || chunks.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          response: `I couldn't find any relevant information in the knowledge base to answer: "${lastUserMessage.content}". Please make sure documents have been uploaded and processed successfully.`
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Simple response based on context (you can enhance this with OpenAI later)
-    const response = `Based on the documents in this knowledge base, I can help answer your question: "${lastUserMessage.content}"\n\nContext found: ${context.length > 0 ? 'Yes, relevant information found.' : 'No specific context found for this query.'}`;
+    // Build context from relevant chunks
+    const context = chunks.map(chunk => chunk.content).join('\n\n');
+    console.log(`Found ${chunks.length} relevant chunks for query: "${lastUserMessage.content}"`);
+
+    // Generate AI response using the context
+    const response = await generateResponse(lastUserMessage.content, context);
 
     return new Response(
       JSON.stringify({ response }),
