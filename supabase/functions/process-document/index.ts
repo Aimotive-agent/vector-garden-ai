@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 // Simple text chunking function
-function chunkText(text: string, maxChunkSize: number = 1000, overlap: number = 200): string[] {
+function chunkText(text: string, maxChunkSize: number = 800, overlap: number = 100): string[] {
   const chunks: string[] = [];
   let start = 0;
   
@@ -26,11 +26,15 @@ function chunkText(text: string, maxChunkSize: number = 1000, overlap: number = 
       }
     }
     
-    chunks.push(text.slice(start, end).trim());
+    const chunk = text.slice(start, end).trim();
+    if (chunk.length > 20) { // Only include meaningful chunks
+      chunks.push(chunk);
+    }
+    
     start = end - overlap;
   }
   
-  return chunks.filter(chunk => chunk.length > 50); // Filter out very short chunks
+  return chunks;
 }
 
 // Simple embedding function using OpenAI API
@@ -49,7 +53,7 @@ async function generateEmbedding(text: string): Promise<number[]> {
     },
     body: JSON.stringify({
       model: 'text-embedding-3-small',
-      input: text,
+      input: text.substring(0, 8000), // Limit to avoid token limits
     }),
   });
 
@@ -61,30 +65,35 @@ async function generateEmbedding(text: string): Promise<number[]> {
   return data.data[0].embedding;
 }
 
-// Extract text from different file types
+// Extract text from different file types - simplified for efficiency
 async function extractText(fileBuffer: ArrayBuffer, mimeType: string, fileName: string): Promise<string> {
   if (mimeType === 'text/plain' || fileName.endsWith('.txt')) {
     return new TextDecoder().decode(fileBuffer);
   }
   
   if (mimeType === 'application/pdf' || fileName.endsWith('.pdf')) {
-    // For PDF processing, we'll use a simple approach
-    // In a production app, you'd want to use a proper PDF parser
-    try {
-      const pdfText = new TextDecoder().decode(fileBuffer);
-      // This is a very basic text extraction - you might want to use a proper PDF library
-      return pdfText.replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
-    } catch (error) {
-      console.error('PDF parsing error:', error);
-      return 'Unable to extract text from PDF file.';
+    // Simple PDF text extraction - just look for readable text
+    const text = new TextDecoder('utf-8', { ignoreBOM: true, fatal: false }).decode(fileBuffer);
+    
+    // Extract readable text patterns from PDF
+    const readableText = text
+      .replace(/[^\x20-\x7E\s]/g, ' ') // Keep only printable ASCII and whitespace
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim();
+    
+    // If we get very little text, it might be a scanned PDF
+    if (readableText.length < 100) {
+      return `This appears to be a scanned PDF (${fileName}). For better text extraction, please convert to a searchable PDF first.`;
     }
+    
+    return readableText;
   }
   
   // For other file types, try to decode as text
   try {
     return new TextDecoder().decode(fileBuffer);
   } catch {
-    return `Content from ${fileName} (${mimeType})`;
+    return `Content from ${fileName} (${mimeType}) - text extraction not supported for this file type.`;
   }
 }
 
@@ -123,6 +132,8 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Processing document: ${document.file_name}`);
+
     // Download file from storage
     const { data: fileData, error: downloadError } = await supabase.storage
       .from('case-documents')
@@ -130,6 +141,11 @@ serve(async (req) => {
 
     if (downloadError || !fileData) {
       console.error('Error downloading file:', downloadError);
+      await supabase
+        .from('documents')
+        .update({ status: 'failed' })
+        .eq('id', documentId);
+      
       return new Response(
         JSON.stringify({ error: 'Failed to download file' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -152,12 +168,14 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Extracted ${extractedText.length} characters from ${document.file_name}`);
+
     // Chunk the text
     const chunks = chunkText(extractedText);
     console.log(`Created ${chunks.length} chunks from document ${documentId}`);
 
-    // Process chunks in batches to avoid overwhelming the API
-    const batchSize = 5;
+    // Process chunks in small batches to avoid memory issues
+    const batchSize = 3;
     let processedChunks = 0;
 
     for (let i = 0; i < chunks.length; i += batchSize) {
@@ -177,7 +195,7 @@ serve(async (req) => {
             .insert({
               document_id: documentId,
               content: chunk,
-              embedding: embedding, // Store as array directly
+              embedding: embedding,
               metadata: {
                 chunk_index: chunkIndex,
                 file_name: document.file_name,
@@ -189,14 +207,17 @@ serve(async (req) => {
             console.error('Error storing chunk:', chunkError);
           } else {
             processedChunks++;
+            console.log(`Processed chunk ${processedChunks}/${chunks.length}`);
           }
         } catch (error) {
           console.error(`Error processing chunk ${chunkIndex}:`, error);
         }
       }
       
-      // Small delay between batches
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Small delay between batches to avoid rate limits
+      if (i + batchSize < chunks.length) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
     }
 
     // Update document status
