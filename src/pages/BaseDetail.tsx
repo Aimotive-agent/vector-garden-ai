@@ -143,6 +143,30 @@ const BaseDetail = () => {
     }
   };
 
+  const createTestData = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-data', {
+        body: { baseId: id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Test data created successfully! You can now try the chat.",
+      });
+
+      loadDocuments(); // Refresh documents list
+    } catch (error) {
+      console.error("Error creating test data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create test data",
+        variant: "destructive",
+      });
+    }
+  };
+
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -271,10 +295,23 @@ const BaseDetail = () => {
                       <FileText className="h-12 w-12 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-semibold mb-3">No Documents Yet</h3>
-                    <p className="text-muted-foreground text-lg">Upload your first document to get started.</p>
+                    <p className="text-muted-foreground text-lg mb-6">Upload your first document to get started.</p>
+                    <div className="space-y-3">
+                      <Button onClick={createTestData} variant="outline" className="gradient-accent">
+                        Create Test Data
+                      </Button>
+                      <p className="text-sm text-muted-foreground">
+                        Create sample data to test the AI chat functionality
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    <div className="flex justify-end mb-4">
+                      <Button onClick={createTestData} variant="outline" size="sm">
+                        Add Test Data
+                      </Button>
+                    </div>
                     {documents.map((doc) => (
                       <div key={doc.id} className="gradient-card border border-border/50 rounded-xl p-6 transition-all hover:glow-primary">
                         <div className="flex items-center justify-between">
