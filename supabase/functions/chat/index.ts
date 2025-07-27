@@ -127,7 +127,6 @@ serve(async (req) => {
           documents!inner(base_id)
         `)
         .eq('documents.base_id', base_id)
-        .textSearch('content', lastUserMessage.content.split(' ').join(' & '))
         .limit(3);
 
       if (fallbackError || !fallbackChunks || fallbackChunks.length === 0) {
@@ -172,7 +171,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in chat function:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
