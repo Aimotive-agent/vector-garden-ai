@@ -159,7 +159,7 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="openai-key">OpenAI API Key (Optional)</Label>
+                  <Label htmlFor="openai-key">DeepSeek API Key (Optional)</Label>
                   <Textarea
                     id="openai-key"
                     value={openaiKey}
@@ -168,7 +168,7 @@ const Dashboard = () => {
                     className="font-mono text-sm"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Optional: Add your OpenAI key to enable embeddings for this base
+                    Optional: Add your DeepSeek key to enable embeddings for this base
                   </p>
                 </div>
               </div>

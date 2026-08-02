@@ -32,7 +32,7 @@ interface Document {
 interface SearchResult {
   id: string;
   content: string;
-  metadata: any;
+  metadata: Record<string, unknown>;
   score: number;
 }
 

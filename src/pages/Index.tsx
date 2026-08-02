@@ -135,7 +135,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t py-8 px-4 bg-muted/30">
         <div className="container mx-auto text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 AI Vector Base. Built with React, Supabase, and OpenAI.</p>
+          <p>&copy; 2024 AI Vector Base. Built with React, Supabase, and DeepSeek.</p>
         </div>
       </footer>
     </div>

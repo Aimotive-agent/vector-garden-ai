@@ -89,18 +89,21 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
     setIsLoading(true);
 
     try {
-      // Call chat edge function
-      const { data, error } = await supabase.functions.invoke('chat', {
-        body: {
+      // Call AI chat function
+      const response = await fetch('/.netlify/functions/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           base_id: selectedBaseId,
           messages: [
             ...messages.filter(m => m.role !== 'assistant' || m.id === '1'), // Keep system message
             userMessage
           ].map(m => ({ role: m.role, content: m.content }))
-        }
+        })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || 'Failed to get response');
 
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -117,7 +120,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: "I'm sorry, I encountered an error while processing your request. Please make sure the chat function is properly configured with your OpenAI API key.",
+        content: "I'm sorry, I encountered an error while processing your request. Please make sure the chat function is properly configured.",
         timestamp: new Date()
       };
 

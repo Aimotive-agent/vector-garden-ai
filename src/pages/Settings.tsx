@@ -15,7 +15,7 @@ interface ApiKey {
   id: string;
   label: string;
   created_at: string;
-  scopes: any;
+  scopes: unknown;
 }
 
 const Settings = () => {
@@ -158,17 +158,17 @@ const Settings = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Global OpenAI Key */}
+          {/* Global AI Key */}
           <Card>
             <CardHeader>
-              <CardTitle>Global OpenAI API Key</CardTitle>
+              <CardTitle>Global DeepSeek API Key</CardTitle>
               <CardDescription>
-                Set a default OpenAI API key for all vector bases that don't have their own key configured
+                Set a default DeepSeek API key for all vector bases that don't have their own key configured
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="global-openai-key">OpenAI API Key</Label>
+                <Label htmlFor="global-openai-key">DeepSeek API Key</Label>
                 <div className="flex space-x-2">
                   <Input
                     id="global-openai-key"
