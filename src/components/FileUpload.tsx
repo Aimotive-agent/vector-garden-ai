@@ -35,6 +35,8 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
 
     for (const upload of newUploads) {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+
         // Create document record first
         const { data: document, error: docError } = await supabase
           .from('documents')
@@ -46,7 +48,7 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
             mime_type: upload.file.type,
             file_path: `${baseId}/${upload.id}/${upload.file.name}`,
             status: 'uploaded',
-            user_id: null // No authentication required
+            user_id: user?.id ?? null
           })
           .select()
           .single();

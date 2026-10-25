@@ -37,32 +37,26 @@ function chunkText(text: string, maxChunkSize: number = 800, overlap: number = 1
   return chunks;
 }
 
-// Simple embedding function using OpenAI API
-async function generateEmbedding(text: string): Promise<number[]> {
-  const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-  
-  if (!openAIApiKey) {
-    throw new Error('OpenAI API key not configured');
-  }
+// Simple embedding function using the homelab Ollama service (no cloud key)
+const EMBED_URL = Deno.env.get('EMBEDDINGS_BASE_URL') ?? 'http://192.168.1.42:11434';
+const EMBED_MODEL = Deno.env.get('EMBEDDINGS_MODEL') ?? 'embeddinggemma';
 
-  const response = await fetch('https://api.openai.com/v1/embeddings', {
+async function generateEmbedding(text: string): Promise<number[]> {
+  const response = await fetch(`${EMBED_URL}/api/embeddings`, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${openAIApiKey}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'text-embedding-3-small',
-      input: text.substring(0, 8000), // Limit to avoid token limits
+      model: EMBED_MODEL,
+      prompt: text.substring(0, 8000), // Limit to avoid token limits
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.statusText}`);
+    throw new Error(`Embedding service error: ${response.status}`);
   }
 
   const data = await response.json();
-  return data.data[0].embedding;
+  return data.embedding;
 }
 
 // Extract text from different file types - simplified for efficiency
@@ -112,9 +106,15 @@ serve(async (req) => {
       );
     }
 
+    // Act as the signed-in user (anon key + forwarded JWT): RLS authorizes,
+    // and no service-role key exists in code.
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_URL') ?? 'http://192.168.1.42:8000',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MDA5MjQ5LCJleHAiOjIxMDEzNjkyNDl9.Tb4mts5kWwOFsqkjUmMJP-qkdEY7Sz1c5hgJAv6BLuo',
+      {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+        auth: { persistSession: false },
+      }
     );
 
     // Get document details

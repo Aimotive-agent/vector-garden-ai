@@ -13,6 +13,8 @@ import { FileUpload } from "@/components/FileUpload";
 import { ChatWindow } from "@/components/ChatWindow";
 import { Database, Search, MessageSquare, Upload, FileText, Clock, CheckCircle, AlertCircle, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BrandMark } from "@/components/BrandMark";
+import { SignOutButton } from "@/components/SignOutButton";
 
 interface VectorBase {
   id: string;
@@ -222,23 +224,22 @@ const BaseDetail = () => {
       <header className="border-b border-border/50 gradient-card">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="gradient-primary p-2 rounded-lg">
-              <Database className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <Link to="/" className="text-xl font-bold hover:text-primary transition-colors">
-              AI Vector Base
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-              Dashboard
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-semibold">{vectorBase.name}</span>
+            <BrandMark>
+              <span className="text-muted-foreground">/</span>
+              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <span className="font-semibold">{vectorBase.name}</span>
+            </BrandMark>
           </div>
-          <Button onClick={() => setShowChat(!showChat)} className="gradient-accent">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            {showChat ? 'Hide Chat' : 'Open Chat'}
-          </Button>
+          <div className="flex items-center space-x-3">
+            <Button onClick={() => setShowChat(!showChat)} className="gradient-accent">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              {showChat ? 'Hide Chat' : 'Open Chat'}
+            </Button>
+            <SignOutButton />
+          </div>
         </div>
       </header>
 

@@ -22,15 +22,19 @@ serve(async (req) => {
       );
     }
 
+    // Act as the signed-in user (anon key + forwarded JWT): RLS authorizes,
+    // and no service-role key exists in code.
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_URL') ?? 'http://192.168.1.42:8000',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MDA5MjQ5LCJleHAiOjIxMDEzNjkyNDl9.Tb4mts5kWwOFsqkjUmMJP-qkdEY7Sz1c5hgJAv6BLuo',
+      {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+        auth: { persistSession: false },
+      }
     );
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
-    }
+    const EMBED_URL = Deno.env.get('EMBEDDINGS_BASE_URL') ?? 'http://192.168.1.42:11434';
+    const EMBED_MODEL = Deno.env.get('EMBEDDINGS_MODEL') ?? 'embeddinggemma';
 
     // Create test document
     const { data: testDoc, error: docError } = await supabase
@@ -63,26 +67,23 @@ serve(async (req) => {
     for (let i = 0; i < sampleChunks.length; i++) {
       const chunk = sampleChunks[i];
       
-      // Generate embedding
-      const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
+      // Generate embedding (local Ollama)
+      const embeddingResponse = await fetch(`${EMBED_URL}/api/embeddings`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'text-embedding-3-small',
-          input: chunk,
+          model: EMBED_MODEL,
+          prompt: chunk,
         }),
       });
 
       if (!embeddingResponse.ok) {
-        console.error('OpenAI API error:', embeddingResponse.statusText);
+        console.error('Embedding service error:', embeddingResponse.status);
         continue;
       }
 
       const embeddingData = await embeddingResponse.json();
-      const embedding = embeddingData.data[0].embedding;
+      const embedding = embeddingData.embedding;
 
       // Store chunk
       const { error: chunkError } = await supabase

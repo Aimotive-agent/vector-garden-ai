@@ -7,9 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Database, Key, Plus, Copy, Trash2, Settings as SettingsIcon } from "lucide-react";
+import { Key, Plus, Copy, Trash2, Settings as SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import bcrypt from "bcryptjs";
+import { BrandMark } from "@/components/BrandMark";
+import { SignOutButton } from "@/components/SignOutButton";
 
 interface ApiKey {
   id: string;
@@ -137,17 +139,18 @@ const Settings = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Database className="h-8 w-8 text-primary" />
-            <Link to="/" className="text-2xl font-bold hover:text-primary transition-colors">
-              AI Vector Base
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-              Dashboard
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-semibold">Settings</span>
+            <BrandMark>
+              <span className="text-muted-foreground">/</span>
+              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
+              <span className="text-muted-foreground">/</span>
+              <span className="font-semibold">Settings</span>
+            </BrandMark>
           </div>
+          <nav className="flex items-center space-x-4">
+            <SignOutButton />
+          </nav>
         </div>
       </header>
 

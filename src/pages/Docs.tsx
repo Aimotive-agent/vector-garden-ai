@@ -1,7 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Database, Book } from "lucide-react";
+import { Book } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BrandMark } from "@/components/BrandMark";
+import { SignOutButton } from "@/components/SignOutButton";
 
 const Docs = () => {
   return (
@@ -10,13 +12,14 @@ const Docs = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Database className="h-8 w-8 text-primary" />
-            <Link to="/" className="text-2xl font-bold hover:text-primary transition-colors">
-              AI Vector Base
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-semibold">API Documentation</span>
+            <BrandMark>
+              <span className="text-muted-foreground">/</span>
+              <span className="font-semibold">API Documentation</span>
+            </BrandMark>
           </div>
+          <nav className="flex items-center space-x-4">
+            <SignOutButton />
+          </nav>
         </div>
       </header>
 

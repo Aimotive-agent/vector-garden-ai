@@ -2,85 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Veritas Global AI design system — same values as veritas-global-ai / tax / synapsecore.
+   Paper background, navy primary, gold accent. Flat hairline cards: no gradients, no glow.
+   All colors MUST be HSL. */
 
 @layer base {
   :root {
-    --background: 240 23% 9%;
-    --foreground: 0 0% 95%;
-    --card: 240 19% 12%;
-    --card-foreground: 0 0% 95%;
-    --popover: 240 19% 12%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 19% 16%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 240 19% 16%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 19% 16%;
-    --input: 240 19% 16%;
-    --ring: 262 83% 58%;
-    --radius: 0.75rem;
-    
-    /* Custom gradient variables */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(320 76% 59%));
-    --gradient-secondary: linear-gradient(135deg, hsl(240 19% 12%), hsl(240 19% 16%));
-    --gradient-accent: linear-gradient(135deg, hsl(320 76% 59%), hsl(262 83% 58%));
-    --gradient-background: linear-gradient(135deg, hsl(240 23% 9%), hsl(240 19% 12%));
-    
-    /* Glow effects */
-    --glow-primary: 0 0 20px hsl(262 83% 58% / 0.3);
-    --glow-accent: 0 0 20px hsl(320 76% 59% / 0.3);
-    
-    /* Shadows */
-    --shadow-elevated: 0 8px 32px hsl(240 23% 9% / 0.6);
-    --shadow-card: 0 4px 16px hsl(240 23% 9% / 0.4);
+    --background: 60 9% 98%; /* paper #FAFAF9 */
+    --foreground: 20 14% 11%; /* ink #1C1917 */
 
-    --sidebar-background: 240 23% 9%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 19% 16%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 19% 16%;
-    --sidebar-ring: 262 83% 58%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 11%;
+
+    --primary: 213 66% 17%; /* navy #0F2A4A */
+    --primary-foreground: 60 9% 98%; /* paper #FAFAF9 */
+
+    --secondary: 48 19% 95%; /* paper-2 #F4F3EF */
+    --secondary-foreground: 213 66% 17%;
+
+    --muted: 48 19% 95%; /* paper-2 #F4F3EF */
+    --muted-foreground: 20 6% 46%; /* #78716C */
+
+    --accent: 36 36% 52%; /* gold #B08D57 */
+    --accent-foreground: 60 9% 98%;
+
+    --destructive: 0 74% 42%; /* #B91C1C */
+    --destructive-foreground: 60 9% 98%;
+
+    --border: 220 13% 91%; /* line #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: 213 66% 17%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 213 70% 13%; /* navy-deep #0A1F38 */
+    --sidebar-foreground: 220 20% 88%;
+    --sidebar-primary: 36 36% 52%; /* gold */
+    --sidebar-primary-foreground: 213 70% 13%;
+    --sidebar-accent: 213 44% 22%;
+    --sidebar-accent-foreground: 60 9% 98%;
+    --sidebar-border: 213 44% 22%;
+    --sidebar-ring: 36 36% 52%;
+
+    /* Legacy utility vars kept for existing class names — flattened to
+       solid/subtle values. No visible gradients, no glow. */
+    --gradient-primary: linear-gradient(hsl(213 66% 17%), hsl(213 66% 17%)); /* flat navy */
+    --gradient-secondary: linear-gradient(hsl(0 0% 100%), hsl(0 0% 100%)); /* flat white */
+    --gradient-accent: linear-gradient(hsl(48 19% 95%), hsl(48 19% 95%)); /* flat paper-2 */
+    --gradient-background: none;
+
+    --glow-primary: 0 1px 2px hsl(20 14% 11% / 0.05);
+    --glow-accent: 0 1px 2px hsl(20 14% 11% / 0.05);
+
+    --shadow-elevated: 0 4px 12px -4px hsl(20 14% 11% / 0.12);
+    --shadow-card: 0 1px 2px hsl(20 14% 11% / 0.05);
   }
 
   .dark {
-    --background: 240 23% 9%;
-    --foreground: 0 0% 95%;
-    --card: 240 19% 12%;
-    --card-foreground: 0 0% 95%;
-    --popover: 240 19% 12%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 19% 16%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 240 19% 16%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 50%;
+    --background: 213 70% 10%; /* navy-deep */
+    --foreground: 220 20% 92%;
+    --card: 213 64% 13%;
+    --card-foreground: 220 20% 92%;
+    --popover: 213 64% 13%;
+    --popover-foreground: 220 20% 92%;
+    --primary: 36 36% 52%; /* gold */
+    --primary-foreground: 213 70% 10%;
+    --secondary: 213 44% 20%;
+    --secondary-foreground: 220 20% 92%;
+    --muted: 213 44% 20%;
+    --muted-foreground: 220 12% 68%;
+    --accent: 36 36% 52%;
+    --accent-foreground: 213 70% 10%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 19% 16%;
-    --input: 240 19% 16%;
-    --ring: 262 83% 58%;
-    --sidebar-background: 240 23% 9%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 19% 16%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 19% 16%;
-    --sidebar-ring: 262 83% 58%;
+    --border: 213 44% 22%;
+    --input: 213 44% 22%;
+    --ring: 36 36% 52%;
+    --gradient-primary: linear-gradient(hsl(36 36% 52%), hsl(36 36% 52%));
+    --gradient-secondary: linear-gradient(hsl(213 64% 13%), hsl(213 64% 13%));
+    --gradient-accent: linear-gradient(hsl(213 44% 20%), hsl(213 44% 20%));
+    --gradient-background: none;
   }
 }
 
@@ -93,25 +97,31 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
     background: var(--gradient-background);
     min-height: 100vh;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
-  
+
+  h1, h2, h3, h4 {
+    font-family: "Source Serif 4", Georgia, serif;
+  }
+
+  /* Legacy class names, mapped to the flat Veritas look */
   .gradient-card {
     background: var(--gradient-secondary);
     box-shadow: var(--shadow-card);
   }
-  
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-accent {
     background: var(--gradient-accent);
   }
-  
+
   .glow-primary {
     box-shadow: var(--glow-primary);
   }
-  
+
   .glow-accent {
     box-shadow: var(--glow-accent);
   }

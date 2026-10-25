@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Database, Plus, FileText, Clock, CheckCircle, AlertCircle, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import { BrandMark } from "@/components/BrandMark";
+import { SignOutButton } from "@/components/SignOutButton";
 
 interface VectorBase {
   id: string;
@@ -114,15 +116,13 @@ const Dashboard = () => {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Database className="h-8 w-8 text-primary" />
-            <Link to="/" className="text-2xl font-bold hover:text-primary transition-colors">
-              AI Vector Base
-            </Link>
+            <BrandMark />
           </div>
           <nav className="flex items-center space-x-4">
             <Link to="/settings" className="text-muted-foreground hover:text-foreground transition-colors">
               <Settings className="h-5 w-5" />
             </Link>
+            <SignOutButton />
           </nav>
         </div>
       </header>

@@ -24,9 +24,15 @@ serve(async (req) => {
     }
 
     // Initialize Supabase client
+    // Act as the signed-in user (anon key + forwarded JWT): RLS authorizes,
+    // and no service-role key exists in code.
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_URL') ?? 'http://192.168.1.42:8000',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzg2MDA5MjQ5LCJleHAiOjIxMDEzNjkyNDl9.Tb4mts5kWwOFsqkjUmMJP-qkdEY7Sz1c5hgJAv6BLuo',
+      {
+        global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
+        auth: { persistSession: false },
+      }
     );
 
     // Create a new document entry for the saved content
@@ -50,12 +56,27 @@ serve(async (req) => {
       );
     }
 
-    // Create a chunk for the saved content
+    // Create a chunk for the saved content (embedded so it is searchable)
+    let embedding: number[] | null = null;
+    try {
+      const EMBED_URL = Deno.env.get('EMBEDDINGS_BASE_URL') ?? 'http://192.168.1.42:11434';
+      const EMBED_MODEL = Deno.env.get('EMBEDDINGS_MODEL') ?? 'embeddinggemma';
+      const embedRes = await fetch(`${EMBED_URL}/api/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: EMBED_MODEL, prompt: content.slice(0, 8000) }),
+      });
+      if (embedRes.ok) embedding = (await embedRes.json()).embedding;
+    } catch (e) {
+      console.error('Embedding failed, saving without vector:', e);
+    }
+
     const { error: chunkError } = await supabase
       .from('chunks')
       .insert({
         document_id: document.id,
         content: content,
+        embedding,
         metadata: {
           source: 'saved_ai_response',
           saved_at: new Date().toISOString()

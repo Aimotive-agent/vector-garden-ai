@@ -19,6 +19,11 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+				serif: ['"Source Serif 4"', "Georgia", "serif"],
+				heading: ['"Source Serif 4"', "Georgia", "serif"],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
