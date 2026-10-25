@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { uuid } from "@/utils/uuid";
 import { useToast } from "@/hooks/use-toast";
 import { Send, X, MessageSquare, Bot, User, Database, Save } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -78,7 +79,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
     if (!inputMessage.trim() || isLoading) return;
 
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: uuid(),
       role: 'user',
       content: inputMessage,
       timestamp: new Date()
@@ -105,7 +106,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
       if (data?.error) throw new Error(data.error);
 
       const assistantMessage: Message = {
-        id: crypto.randomUUID(),
+        id: uuid(),
         role: 'assistant',
         content: data?.response || "I'm sorry, I couldn't process your request at the moment.",
         timestamp: new Date()
@@ -117,7 +118,7 @@ export const ChatWindow = ({ baseId, onClose }: ChatWindowProps) => {
       console.error('Chat error:', error);
       
       const errorMessage: Message = {
-        id: crypto.randomUUID(),
+        id: uuid(),
         role: 'assistant',
         content: "I'm sorry, I encountered an error while processing your request. Please try again shortly.",
         timestamp: new Date()

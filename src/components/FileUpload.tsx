@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { uuid } from "@/utils/uuid";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, File, X, CheckCircle } from "lucide-react";
 
@@ -28,7 +29,7 @@ export const FileUpload = ({ baseId, onUploadComplete }: FileUploadProps) => {
       file,
       progress: 0,
       status: 'uploading' as const,
-      id: crypto.randomUUID()
+      id: uuid()
     }));
 
     setUploads(prev => [...prev, ...newUploads]);
