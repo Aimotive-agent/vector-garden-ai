@@ -188,7 +188,7 @@ const BaseDetail = () => {
       case "error":
         return <AlertCircle className="h-4 w-4 text-red-500" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -234,7 +234,7 @@ const BaseDetail = () => {
             </BrandMark>
           </div>
           <div className="flex items-center space-x-3">
-            <Button onClick={() => setShowChat(!showChat)} className="gradient-accent">
+            <Button onClick={() => setShowChat(!showChat)} className="gradient-primary">
               <MessageSquare className="h-4 w-4 mr-2" />
               {showChat ? 'Hide Chat' : 'Open Chat'}
             </Button>
@@ -385,7 +385,7 @@ const BaseDetail = () => {
                   />
                   <Button onClick={handleSearch} disabled={searching || !searchQuery.trim()} className="gradient-primary px-8">
                     {searching ? (
-                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="h-5 w-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <Search className="h-5 w-5" />
                     )}
@@ -449,7 +449,7 @@ const BaseDetail = () => {
                       Connect external services and API endpoints to your vector base
                     </CardDescription>
                   </div>
-                  <div className="gradient-accent px-4 py-2 rounded-lg">
+                  <div className="gradient-primary px-4 py-2 rounded-lg">
                     <Database className="h-6 w-6 text-primary-foreground" />
                   </div>
                 </div>
@@ -475,7 +475,7 @@ const BaseDetail = () => {
                             className="mt-2 bg-muted border-border/50"
                           />
                         </div>
-                        <Button className="w-full gradient-accent">
+                        <Button className="w-full gradient-primary">
                           Configure Webhook
                         </Button>
                       </div>

@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Veritas Global AI design system — same values as veritas-global-ai / tax / synapsecore.
-   Paper background, navy primary, gold accent. Flat hairline cards: no gradients, no glow.
-   All colors MUST be HSL. */
+/* Veritas Global AI design system — same brand as veritas-global-ai / tax / synapsecore.
+   DARK default: deep navy surfaces, warm off-white text, gold accent (CTAs/links).
+   Flat hairline cards: no gradients, no glow. All colors MUST be HSL.
+   The light palette below is kept as the un-classed fallback only. */
 
 @layer base {
   :root {
@@ -61,30 +62,51 @@
     --shadow-card: 0 1px 2px hsl(20 14% 11% / 0.05);
   }
 
+  /* Dark is the default theme (html.dark in index.html) — deep navy surfaces,
+     warm off-white text, gold CTAs/accents. Flat hairline cards: no gradients,
+     no glow. Gold stays the accent; navy remains the surface identity. */
   .dark {
-    --background: 213 70% 10%; /* navy-deep */
-    --foreground: 220 20% 92%;
-    --card: 213 64% 13%;
-    --card-foreground: 220 20% 92%;
-    --popover: 213 64% 13%;
-    --popover-foreground: 220 20% 92%;
-    --primary: 36 36% 52%; /* gold */
-    --primary-foreground: 213 70% 10%;
-    --secondary: 213 44% 20%;
-    --secondary-foreground: 220 20% 92%;
-    --muted: 213 44% 20%;
+    color-scheme: dark;
+
+    --background: 213 64% 9%; /* navy-deep #0B2038-ish */
+    --foreground: 40 24% 94%; /* warm off-white #F5F2EC */
+    --card: 213 58% 12%;
+    --card-foreground: 40 24% 94%;
+    --popover: 213 58% 12%;
+    --popover-foreground: 40 24% 94%;
+    --primary: 36 36% 52%; /* gold #B08D57 */
+    --primary-foreground: 213 64% 9%; /* navy-deep */
+    --secondary: 213 42% 18%;
+    --secondary-foreground: 40 24% 94%;
+    --muted: 213 42% 18%;
     --muted-foreground: 220 12% 68%;
-    --accent: 36 36% 52%;
-    --accent-foreground: 213 70% 10%;
-    --destructive: 0 72% 51%;
+    --accent: 36 36% 52%; /* gold */
+    --accent-foreground: 213 64% 9%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 213 44% 22%;
-    --input: 213 44% 22%;
+    --border: 213 38% 21%;
+    --input: 213 38% 21%;
     --ring: 36 36% 52%;
-    --gradient-primary: linear-gradient(hsl(36 36% 52%), hsl(36 36% 52%));
-    --gradient-secondary: linear-gradient(hsl(213 64% 13%), hsl(213 64% 13%));
-    --gradient-accent: linear-gradient(hsl(213 44% 20%), hsl(213 44% 20%));
+
+    --sidebar-background: 213 68% 7%;
+    --sidebar-foreground: 220 20% 88%;
+    --sidebar-primary: 36 36% 52%;
+    --sidebar-primary-foreground: 213 64% 9%;
+    --sidebar-accent: 213 44% 22%;
+    --sidebar-accent-foreground: 40 24% 94%;
+    --sidebar-border: 213 44% 22%;
+    --sidebar-ring: 36 36% 52%;
+
+    --gradient-primary: linear-gradient(hsl(36 36% 52%), hsl(36 36% 52%)); /* flat gold */
+    --gradient-secondary: linear-gradient(hsl(213 58% 12%), hsl(213 58% 12%)); /* flat card */
+    --gradient-accent: linear-gradient(hsl(213 42% 18%), hsl(213 42% 18%)); /* flat muted */
     --gradient-background: none;
+
+    --glow-primary: 0 1px 2px hsl(213 64% 4% / 0.4);
+    --glow-accent: 0 1px 2px hsl(213 64% 4% / 0.4);
+
+    --shadow-elevated: 0 4px 12px -4px hsl(213 64% 4% / 0.45);
+    --shadow-card: 0 1px 2px hsl(213 64% 4% / 0.3);
   }
 }
 

@@ -250,7 +250,7 @@ const Settings = () => {
                       <Input
                         value={createdKey}
                         readOnly
-                        className="font-mono text-sm bg-white"
+                        className="font-mono text-sm bg-background"
                       />
                       <Button 
                         variant="outline" 
